@@ -13,7 +13,7 @@ public class ExchangeRate {
     private String name;
 
     public ExchangeRate(){
-        super();
+
     }
 
     public ExchangeRate(Long id,String shortName, String rate, String name) {

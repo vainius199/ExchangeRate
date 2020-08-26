@@ -21,7 +21,8 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -37,11 +38,13 @@ public class ExchangeService{
     @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
     public void ShowExchangeRates(){
 
+
         if(!exchangeRepository.findAll().isEmpty()){
             exchangeRepository.deleteAll();
         }
     try
     {
+        
         DocumentBuilderFactory factory;
         factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -52,19 +55,23 @@ public class ExchangeService{
 
             Node n = list.item(i);
             Element e = (Element)n;
-            String temp =e.getElementsByTagName("Ccy").item(1).getTextContent();
+            String tempCurrencyCode =e.getElementsByTagName("Ccy").item(1).getTextContent();
+
+
 
 
             for (CurrencyCode code : CurrencyCode.values())
             {
                 String currencyName =String.format("%s",code.getCurrency());
 
-                if(currencyName.equals(temp)){
+                if(currencyName.equals(tempCurrencyCode)){
 
                     String letters = e.getElementsByTagName("Ccy").item(1).getTextContent();
                     String rate = e.getElementsByTagName("Amt").item(1).getTextContent();
 
-                    exchangeRepository.save(new ExchangeRate(Long.valueOf(i+1),letters,rate,code.getName()));
+
+
+                    exchangeRepository.save(new ExchangeRate((long) (i + 1),letters,rate,code.getName()));
 
                 }
             }
@@ -80,14 +87,14 @@ public void ShowHistoryData( String name,String dateFrom, String dateTo){
         String date1 = dateFrom;
         String date2 = dateTo;
 
-        if(date1 =="" || date2 == ""){
+        if(date1.isEmpty() || date2.isEmpty()){
 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             LocalDateTime now = LocalDateTime.now();
             date2=dtf.format(now);
 
-            LocalDate dateMinusYear = LocalDate.now().minusDays(365);
+            LocalDate dateMinusYear = LocalDate.now().minusYears(1);
             date1 = dtf.format(dateMinusYear);
 
         }
@@ -117,7 +124,7 @@ public void ShowHistoryData( String name,String dateFrom, String dateTo){
             String letters = e.getElementsByTagName("Ccy").item(1).getTextContent();
             String rate = e.getElementsByTagName("Amt").item(1).getTextContent();
 
-            historyRepository.save(new History(Long.valueOf(i+1),letters,rate, date));
+            historyRepository.save(new History((long) (i + 1),letters,rate, date));
 
         }
 

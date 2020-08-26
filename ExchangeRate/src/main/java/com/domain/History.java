@@ -13,7 +13,7 @@ public class History {
     private String date;
 
     public History(){
-        super();
+
     }
 
     public History(Long id,String name, String rate, String date) {
